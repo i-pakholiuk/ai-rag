@@ -92,11 +92,11 @@ public class EmbeddingsService {
     // chunkend embeddings saving
     list.forEach(c -> {
       counter2.getAndIncrement();
-      log.info("Stored chunks {} of {}", counter2.get(), list.size());
+      log.info("Stored batches {} of {}", counter2.get(), list.size());
       vectorStore.addAll(c.getEmbeddings(), c.getSegments());
     });
 
-    log.info("Processed and stored: {} documents in {} chunks", counter, counter2);
+    log.info("Processed and stored: {} documents in {} bathces", counter, counter2);
 
   }
 
@@ -145,7 +145,7 @@ public class EmbeddingsService {
                 createContent(doc),
                 Metadata.from(createMetadata(doc)))));
       } catch (Exception ex) {
-        log.error("Chunking error", ex);
+        log.error("Batching error", ex);
       }
     }
 

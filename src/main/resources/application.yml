@@ -14,7 +14,7 @@ spring:
         completions-path: ${OPEN_API_CMPPATH:/chat/completions}
         options:
           model: ${OPEN_API_MODEL:gemini-2.0-flash}
-          temperature: 0.5
+          temperature: 0.7
   cache:
     type: caffeine
     caffeine:
