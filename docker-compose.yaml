@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  ### LOCAL APPLICATION
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_IMAGE: ${BUILD_IMAGE:-maven:3.8.3-openjdk-17}
+        RUNTIME_IMAGE: ${RUNTIME_IMAGE:-openjdk:17-jdk-slim}
+    #command: java -Xmx512m -Xms512m -jar /app/application.jar
+    command: java -jar /app/application.jar
+    restart: always
+    working_dir: /app/
+    healthcheck:
+      test: ["CMD", "nc", "-vzw", "2", "127.0.0.1", "8080"]
+      interval: 10s
+      timeout: 9s
+      retries: 3
+    ports:
+      - "8080:8080"
+    depends_on:
+      - chroma
+    environment:
+      OPEN_API_KEY: 1
+      OPEN_API_URL: https://generativelanguage.googleapis.com/v1beta/openai
+      OPEN_API_CMPPATH: /chat/completions
+      OPEN_API_MODEL: gemini-2.0-flash
+      CHROMA_URL: http://chroma
+      CHROMA_PORT: 8000
+      DATA_PATH: file:/app/data/**/*
+    volumes:
+      - "c:/temp/collection-main/objects:/app/data"
+    networks:
+      - rag-net
+
+  chroma:
+    image: chromadb/chroma:0.4.24
+    container_name: chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - "C:/temp/chroma-data:/chroma/chroma"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=TRUE
+    restart: unless-stopped
+    networks:
+      - rag-net
+
+networks:
+  rag-net:
+    driver: bridge

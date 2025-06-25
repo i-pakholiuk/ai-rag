@@ -1,0 +1,9 @@
+<context>{context}</context>
+<question>{question}</question>
+
+Instructions:
+- Answer the question only using the <context>
+- If there is no information to provide the answer, tell about that
+- Give the answer in English
+- Be accurate and concrete
+- The context can be in any language, not just English

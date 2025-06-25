@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Prompt</title>
+</head>
+<body>
+<h2>Ask a question about the Minneapolis Institute of Art collection</h2>
+<textarea id="questionInput" placeholder="Enter your question here..."></textarea><br>
+<button onclick="sendPrompt()">Send</button>
+
+<h3>Answer</h3>
+<pre id="answerOutput" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+
+<h3>Sources</h3>
+<ul id="sourcesOutput"></ul>
+
+<script>
+  async function sendPrompt() {
+    const question = document.getElementById("questionInput").value;
+    const answerOutput = document.getElementById("answerOutput");
+    const sourcesOutput = document.getElementById("sourcesOutput");
+
+    answerOutput.textContent = "Loading...";
+    sourcesOutput.innerHTML = "";
+
+    try {
+      const response = await fetch("http://127.0.0.1:8080/chat/prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Cache-Control": "" },
+        body: JSON.stringify({ question })
+      });
+
+      if (!response.ok) {
+        answerOutput.textContent = "Error: " + response.statusText;
+        return;
+      }
+
+      const result = await response.json();
+
+      // Show answer
+      answerOutput.textContent = result.answer || "No answer received.";
+
+      // Show sources
+      if (Array.isArray(result.sources)) {
+        result.sources.forEach(source => {
+          const li = document.createElement("li");
+          li.textContent = source;
+          sourcesOutput.appendChild(li);
+        });
+      } else {
+        sourcesOutput.innerHTML = "<li>No sources found.</li>";
+      }
+    } catch (err) {
+      answerOutput.textContent = "Request failed: " + err.message;
+    }
+  }
+</script>
+</body>
+</html>

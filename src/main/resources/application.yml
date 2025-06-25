@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: ai-test
+  ai:
+    openai:
+      api-key: ${OPEN_API_KEY}
+      base-url: ${OPEN_API_URL:https://generativelanguage.googleapis.com/v1beta/openai}
+      chat:
+        completions-path: ${OPEN_API_CMPPATH:/chat/completions}
+        options:
+          model: ${OPEN_API_MODEL:gemini-2.0-flash}
+          temperature: 0.5
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000, expireAfterWrite=60m
+
+vectorstore:
+  chroma:
+    collection-name: json_docs
+    base-url: ${CHROMA_URL:http://127.0.0.1}
+    port: ${CHROMA_PORT:8000}
+    timeout: 3600
+
+app:
+  rag:
+    vector-max-results: 5
+    vector-min-similarity: 0.75
+    max-segment-size: 1000
+    max-overlap-size: 100
+    doc-storage-path: ${DATA_PATH:file:///c:/temp/collection-main/objects/**/*}
+    batch-size: 200
+
+logging:
+  level:
+    my.aitest: debug
